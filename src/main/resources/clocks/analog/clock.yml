@@ -1,0 +1,37 @@
+# Type is either 'analog' (with two digits) or 'digital' (00:00)
+type: analog
+
+# -----------------------------------------------------------------------------------
+# Digital clock info
+# -----------------------------------------------------------------------------------
+# A digital clock MUST have the following PNG files in its directory:
+# 'background.png' - 128x128 pixel clock face.
+# '0.png'
+# '1.png'
+# '2.png'
+# '3.png'
+# '4.png'
+# '5.png'
+# '6.png'
+# '7.png'
+# '8.png'
+# '9.png'
+# 'separator.png' - Character which separates hours and minutes, e.g. color (":")
+# - The graphics will automatically be aligned by their baseline (lower end).
+# - The width of each number is determined automatically.
+# Make sure that the numbers will always properly fit on the clock.
+
+# -----------------------------------------------------------------------------------
+# Analog clock info
+# -----------------------------------------------------------------------------------
+# An analog clock MUST have the following PNG files in its directory:
+# 'background.png' - 128x128 pixel clock face.
+# 'hour_hand.png'
+# 'minute_hand.png'
+# - The graphics will automatically be aligned by their baseline (lower end).
+
+# Optional: Set the coordinate of the point where the two
+# digits are centered, and are moving around. By default,
+# this is the center of the clock (64/64).
+#center: 64,64
+

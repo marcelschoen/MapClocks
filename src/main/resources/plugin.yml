@@ -1,0 +1,12 @@
+name: MapClocks
+version: '${project.version}'
+main: games.play4ever.mapclocks.MapClocks
+api-version: 1.14
+prefix: MapClocks
+depend: [PlaceholderAPI]
+author: MarcelSchoen
+description: Renders digital and analog clocks on maps.
+commands:
+  reload:
+    description: MapClocks command for reloading config.
+    aliases: [mclocks, mapclocks]

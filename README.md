@@ -1,3 +1,4 @@
-# MyCustomPlaceholders
+# MapClocks
 
-Allows to configure custom placeholders, fixed or dynamic, to be used with Placeholder API (PAPI).
+Renders digital or analog clocks in Minecraft maps. Put
+them in an item frame, and you have a wall clock.
