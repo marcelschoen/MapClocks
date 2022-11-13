@@ -1,6 +1,5 @@
-package games.play4ever.mapclocks.imagemap;
+package games.play4ever.mapclocks;
 
-import games.play4ever.mapclocks.MapClocks;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,7 +34,17 @@ public class ClockManager implements Listener {
         if (hasClock(event.getMap().getId())) {
             MapView view = event.getMap();
             view.getRenderers().clear();
-            view.addRenderer(new Render(getClock(view.getId())));
+            String clockName = ClockManager.getInstance().getClock(view.getId());
+            if(clockName == null) {
+                MapClocks.logError("Invalid map ID, no clock name found: " + view.getId());
+                return;
+            }
+            Clock clock = MapClocks.getClockByName(clockName);
+            if(clock == null) {
+                MapClocks.logError("Invalid clock name, no clock found: " + clockName);
+                return;
+            }
+            view.addRenderer(new ClockRenderer(clock));
             view.setScale(MapView.Scale.FARTHEST);
             view.setTrackingPosition(false);
         }

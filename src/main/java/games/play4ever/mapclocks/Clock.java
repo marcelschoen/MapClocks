@@ -21,7 +21,7 @@ public class Clock {
     private BufferedImage[] digits;
     private BufferedImage separator;
 
-    private enum TYPES {
+    public enum TYPES {
         analog,
         digital
     }

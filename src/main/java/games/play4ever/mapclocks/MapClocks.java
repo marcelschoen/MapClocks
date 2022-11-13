@@ -1,6 +1,5 @@
 package games.play4ever.mapclocks;
 
-import games.play4ever.mapclocks.imagemap.ClockManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,7 +29,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     private final String CONFIG_FILENAME = "config.yml";
 
     /** Stores all configures clocks. */
-    private Map<String, Clock> clocks = new HashMap<>();
+    private static Map<String, Clock> clocks = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -39,6 +38,10 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         readConfig();
         ClockManager clockManager = ClockManager.getInstance();
         clockManager.init();
+    }
+
+    public static Clock getClockByName(String clockName) {
+        return clocks.get(clockName);
     }
 
     public static void logInfo(String message) {
@@ -56,8 +59,16 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     private void readConfig() {
 
         try {
+            new File(new File(getDataFolder(), "clocks"), "analog").mkdirs();
+            new File(new File(getDataFolder(), "clocks"), "digital").mkdirs();
+            File configFile = new File(getDataFolder(), CONFIG_FILENAME);
+            if(!configFile.exists()) {
+                saveDefaultConfig();
+                saveResource("clocks/analog/background.png", false);
+            }
+
             YamlConfiguration config = new YamlConfiguration();
-            config.load(CONFIG_FILENAME);
+            config.load(configFile);
 
             File clocksDirectory = new File(getDataFolder(), "clocks");
             for(String subDirName : clocksDirectory.list()) {
@@ -119,8 +130,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                     if(player == null) {
                         sender.sendMessage(ChatColor.RED + "Player '" + playerName + "' not found, check for typo.");
                     } else {
-                        Clock clock = clocks.get(clockName);
-
                         MapView view = Bukkit.createMap(player.getWorld());
                         ItemStack map = new ItemStack(Material.FILLED_MAP);
                         MapMeta meta = (MapMeta) map.getItemMeta();
