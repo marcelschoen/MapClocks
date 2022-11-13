@@ -51,7 +51,11 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             for(String subDirName : clocksDirectory.list()) {
                 File subDir = new File(clocksDirectory, subDirName);
                 if(subDir.isDirectory()) {
-                    clocks.put(subDirName, new Clock(subDir));
+                    try {
+                        clocks.put(subDirName, new Clock(subDir));
+                    } catch(InvalidConfigurationException ex) {
+                        MapClocks.logWarn("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
+                    }
                 }
             }
             logInfo("[MapClocks] Number of clocks found: " + clocks.size());
