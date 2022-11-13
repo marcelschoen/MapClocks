@@ -23,10 +23,11 @@ public class ClockRenderer extends MapRenderer {
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
         view.setTrackingPosition(false);
-        canvas.drawImage(0,0, renderClock());
+        canvas.drawImage(10,10, renderClock());
     }
 
     private BufferedImage renderClock() {
+        MapClocks.logInfo("Render clock: " + clock.getClockType());
         BufferedImage image = deepCopy(clock.getBackground());
         Graphics g = image.getGraphics();
         if(clock.getClockType() == Clock.TYPES.analog) {

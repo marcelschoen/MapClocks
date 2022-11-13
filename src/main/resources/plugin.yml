@@ -6,6 +6,6 @@ prefix: MapClocks
 author: MarcelSchoen
 description: Renders digital and analog clocks on maps.
 commands:
-  reload:
-    description: MapClocks command for reloading config.
-    aliases: [mclocks, mapclocks]
+  mapclocks:
+    description: MapClocks command.
+    aliases: [mclocks]

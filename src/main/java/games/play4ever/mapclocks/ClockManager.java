@@ -31,15 +31,19 @@ public class ClockManager implements Listener {
     }
     @EventHandler
     public void onMapInitEvent(MapInitializeEvent event) {
+        MapClocks.logInfo("Map initialization event");
         if (hasClock(event.getMap().getId())) {
+            MapClocks.logInfo("Map ID exists");
             MapView view = event.getMap();
             view.getRenderers().clear();
             String clockName = ClockManager.getInstance().getClock(view.getId());
+            MapClocks.logInfo("Clock name: " + clockName);
             if(clockName == null) {
                 MapClocks.logError("Invalid map ID, no clock name found: " + view.getId());
                 return;
             }
             Clock clock = MapClocks.getClockByName(clockName);
+            MapClocks.logInfo("Clock: " + clock);
             if(clock == null) {
                 MapClocks.logError("Invalid clock name, no clock found: " + clockName);
                 return;

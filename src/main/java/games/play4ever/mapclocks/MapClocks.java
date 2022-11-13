@@ -31,10 +31,19 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     /** Stores all configures clocks. */
     private static Map<String, Clock> clocks = new HashMap<>();
 
+    private Map<String, Clock.TYPES> includedClocks = new HashMap<>();
+
     @Override
     public void onEnable() {
+        includedClocks.put("analog", Clock.TYPES.analog);
+
+        // Prefix as defined in "plugin.yml"
+        Objects.requireNonNull(getCommand("mapclocks")).setExecutor(this);
+        Objects.requireNonNull(getCommand("mapclocks")).setTabCompleter(this);
+
         // Plugin startup logic
-        completions = new ArrayList<>(Arrays.asList("reload"));
+        completions = new ArrayList<>(Arrays.asList("reload", "help", "give"));
+
         readConfig();
         ClockManager clockManager = ClockManager.getInstance();
         clockManager.init();
@@ -59,12 +68,22 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     private void readConfig() {
 
         try {
-            new File(new File(getDataFolder(), "clocks"), "analog").mkdirs();
-            new File(new File(getDataFolder(), "clocks"), "digital").mkdirs();
+            File clocksDir = new File(getDataFolder(), "clocks");
+            clocksDir.mkdirs();
             File configFile = new File(getDataFolder(), CONFIG_FILENAME);
             if(!configFile.exists()) {
                 saveDefaultConfig();
-                saveResource("clocks/analog/background.png", false);
+            }
+            for(String clockName : includedClocks.keySet()) {
+                File clockDir = new File(clocksDir, clockName);
+                clockDir.mkdirs();
+                saveResource("clocks/" + clockName + "/clock.yml", false);
+                Clock clock = new Clock(clockDir);
+                if(clock.getClockType() == Clock.TYPES.analog) {
+                    saveResource("clocks/" + clockName + "/minute_hand.png", false);
+                    saveResource("clocks/" + clockName + "/hour_hand.png", false);
+                }
+                saveResource("clocks/" + clockName + "/background.png", false);
             }
 
             YamlConfiguration config = new YamlConfiguration();
@@ -76,6 +95,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 if(subDir.isDirectory()) {
                     try {
                         clocks.put(subDirName, new Clock(subDir));
+                        completions.add("give " + subDirName);
                     } catch(InvalidConfigurationException ex) {
                         MapClocks.logError("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
                     }
@@ -94,19 +114,19 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        logInfo("->>> COMPLETE / command: " + command.getName() + " / alias: " + alias + " / args: " + (args == null ? "0" : args.length));
         return completions;
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        logInfo("===>>> onCommand: " + command.getName());
         final String cmd = command.getName().toLowerCase();
         if (!cmd.equals("mapclocks") && !cmd.equals("mclocks")) {
             return false;
         }
-        if(args.length < 1) {
-            String msg = "Missing command parameters.";
-            sender.sendMessage(ChatColor.RED + msg);
-            logWarn(msg);
+        for(String arg : args) {
+            logInfo("===>>> argument: " + arg);
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
@@ -116,20 +136,24 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         } else if (args[0].equalsIgnoreCase("help")) {
             showHelp(sender);
             return true;
-        } else if (args[1].equalsIgnoreCase("give")) {
+        } else if (args[0].equalsIgnoreCase("give")) {
+            logInfo("Give clock...");
             if(args.length != 3) {
                 sender.sendMessage(ChatColor.RED + "Invalid arguments for 'give' command, must be 3, see help:");
                 showHelp(sender);
             } else {
-                String clockName = args[2];
+                String clockName = args[1];
+                logInfo("Clock name: " + clockName);
                 if(!clocks.containsKey(clockName)) {
                     sender.sendMessage(ChatColor.RED + "Clock '" + clockName + "' not found, check for typo.");
                 } else {
                     String playerName = args[2];
+                    logInfo("Player name: " + playerName);
                     Player player = Bukkit.getPlayer(playerName);
                     if(player == null) {
                         sender.sendMessage(ChatColor.RED + "Player '" + playerName + "' not found, check for typo.");
                     } else {
+                        logInfo("Give clock to player now...");
                         MapView view = Bukkit.createMap(player.getWorld());
                         ItemStack map = new ItemStack(Material.FILLED_MAP);
                         MapMeta meta = (MapMeta) map.getItemMeta();

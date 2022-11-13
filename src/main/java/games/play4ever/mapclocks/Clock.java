@@ -30,14 +30,21 @@ public class Clock {
 
     private String name;
 
+    private File directory;
+
     public Clock(File directory) throws IOException, InvalidConfigurationException {
+        this.directory = directory;
         this.name = directory.getName();
         YamlConfiguration config = new YamlConfiguration();
         config.load(new File(directory,"clock.yml"));
-
-        config.get("type");
         this.clockType = TYPES.valueOf(config.getString("type"));
+    }
 
+    public TYPES getType() {
+        return this.clockType;
+    }
+
+    public void initialize() throws InvalidConfigurationException {
         this.background = MapPalette.resizeImage(loadImage(new File(directory, "background.png")));
 
         if(this.clockType == TYPES.analog) {
