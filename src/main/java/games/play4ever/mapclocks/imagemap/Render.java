@@ -52,8 +52,8 @@ public class Render extends MapRenderer {
     public void render(MapView view, MapCanvas canvas, Player player) {
         if (done)
             return;
-        canvas.drawImage(0,0,image);
         view.setTrackingPosition(false);
+        canvas.drawImage(0,0,image);
         done=true;
     }
 }

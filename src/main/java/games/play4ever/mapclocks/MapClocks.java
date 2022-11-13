@@ -1,17 +1,23 @@
 package games.play4ever.mapclocks;
 
+import games.play4ever.mapclocks.imagemap.ClockManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -31,6 +37,8 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         // Plugin startup logic
         completions = new ArrayList<>(Arrays.asList("reload"));
         readConfig();
+        ClockManager clockManager = ClockManager.getInstance();
+        clockManager.init();
     }
 
     public static void logInfo(String message) {
@@ -39,6 +47,10 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     public static void logWarn(String message) {
         PluginLogger.getLogger(MapClocks.class.getName()).warning("[MapClocks] " + message);
+    }
+
+    public static void logError(String message) {
+        PluginLogger.getLogger(MapClocks.class.getName()).severe("[MapClocks] " + message);
     }
 
     private void readConfig() {
@@ -54,7 +66,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                     try {
                         clocks.put(subDirName, new Clock(subDir));
                     } catch(InvalidConfigurationException ex) {
-                        MapClocks.logWarn("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
+                        MapClocks.logError("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
                     }
                 }
             }
@@ -62,13 +74,11 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
             logInfo("[MapClocks] Configuration loaded.");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidConfigurationException e) {
+        } catch (Exception e) {
+            MapClocks.logError("Failed to load configuration: " + e);
             throw new RuntimeException(e);
         }
-
-        logInfo("Loaded custom placeholders configuration. Placeholders: ");
+        logInfo("Loaded MapClocks configuration.");
     }
 
     @Override
@@ -93,13 +103,49 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             readConfig();
             return true;
         } else if (args[0].equalsIgnoreCase("help")) {
-            sender.sendMessage(ChatColor.GREEN + "MyCustomPlaceholders commands:");
-            sender.sendMessage(ChatColor.GREEN + "help - shows this help");
-            sender.sendMessage(ChatColor.GREEN + "reload - reload placeholder configuration");
-            sender.sendMessage(ChatColor.GREEN + "set <name> <value> - Sets the configured placeholder <name> to the given <value>");
+            showHelp(sender);
+            return true;
+        } else if (args[1].equalsIgnoreCase("give")) {
+            if(args.length != 3) {
+                sender.sendMessage(ChatColor.RED + "Invalid arguments for 'give' command, must be 3, see help:");
+                showHelp(sender);
+            } else {
+                String clockName = args[2];
+                if(!clocks.containsKey(clockName)) {
+                    sender.sendMessage(ChatColor.RED + "Clock '" + clockName + "' not found, check for typo.");
+                } else {
+                    String playerName = args[2];
+                    Player player = Bukkit.getPlayer(playerName);
+                    if(player == null) {
+                        sender.sendMessage(ChatColor.RED + "Player '" + playerName + "' not found, check for typo.");
+                    } else {
+                        Clock clock = clocks.get(clockName);
+
+                        MapView view = Bukkit.createMap(player.getWorld());
+                        ItemStack map = new ItemStack(Material.FILLED_MAP);
+                        MapMeta meta = (MapMeta) map.getItemMeta();
+                        meta.setMapView(view);
+                        map.setItemMeta(meta);
+                        //Give items and drop if inventory is full
+                        HashMap<Integer, ItemStack> failedItems = player.getInventory().addItem(map);
+                        for (Map.Entry<Integer, ItemStack> entry : failedItems.entrySet()) {
+                            player.getWorld().dropItem(player.getLocation(), entry.getValue());
+                        }
+                        ClockManager manager = ClockManager.getInstance();
+                        manager.saveClock(view.getId(), clockName);
+                    }
+                }
+            }
             return true;
         }
         return false;
+    }
+
+    private void showHelp(final CommandSender sender) {
+        sender.sendMessage(ChatColor.GREEN + "MapClocks commands:");
+        sender.sendMessage(ChatColor.GREEN + "help - shows this help");
+        sender.sendMessage(ChatColor.GREEN + "give <clock> <playername> - OP/console only: Give clock <clockname> to player <player>");
+        sender.sendMessage(ChatColor.GREEN + "reload - OP/console only: reload MapClocks configuration");
     }
 
     @Override
