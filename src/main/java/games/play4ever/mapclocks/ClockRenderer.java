@@ -27,7 +27,8 @@ public class ClockRenderer extends MapRenderer {
     }
 
     private BufferedImage renderClock() {
-        MapClocks.logInfo("Render clock: " + clock.getClockType());
+        MapClocks.logInfo("> Render clock: " + clock.getClockType()
+                + " / background: " + clock.getBackground().getWidth() + "," + clock.getBackground().getHeight());
         BufferedImage image = deepCopy(clock.getBackground());
         Graphics g = image.getGraphics();
         if(clock.getClockType() == Clock.TYPES.analog) {

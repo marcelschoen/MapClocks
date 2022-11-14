@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.MapInitializeEvent;
-import org.bukkit.map.MapView;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +30,7 @@ public class ClockManager implements Listener {
     }
     @EventHandler
     public void onMapInitEvent(MapInitializeEvent event) {
+        /*
         MapClocks.logInfo("Map initialization event");
         if (hasClock(event.getMap().getId())) {
             MapClocks.logInfo("Map ID exists");
@@ -52,14 +52,17 @@ public class ClockManager implements Listener {
             view.setScale(MapView.Scale.FARTHEST);
             view.setTrackingPosition(false);
         }
+         */
     }
 
     public void saveClock(Integer mapId, String clockName) {
+        MapClocks.logInfo(">> save map '" + mapId + "' with clock: " + clockName);
         getData().set("ids." + mapId, clockName);
         saveData();
     }
 
     public boolean hasClock(int id) {
+        MapClocks.logInfo("--> hasClock " + id + ": " + savedClocks.containsKey(id));
         return savedClocks.containsKey(id);
     }
     public String getClock(int id) {

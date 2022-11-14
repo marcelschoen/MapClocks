@@ -103,6 +103,10 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             }
             logInfo("[MapClocks] Number of clocks found: " + clocks.size());
 
+            for(Clock clock : clocks.values()) {
+                clock.initialize();
+            }
+
             logInfo("[MapClocks] Configuration loaded.");
 
         } catch (Exception e) {
@@ -155,6 +159,16 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                     } else {
                         logInfo("Give clock to player now...");
                         MapView view = Bukkit.createMap(player.getWorld());
+
+                        view.getRenderers().clear();
+                        Clock clock = MapClocks.getClockByName(clockName);
+                        view.addRenderer(new ClockRenderer(clock));
+                        view.setScale(MapView.Scale.FARTHEST);
+                        view.setTrackingPosition(false);
+
+                        ClockManager manager = ClockManager.getInstance();
+                        manager.saveClock(view.getId(), clockName);
+
                         ItemStack map = new ItemStack(Material.FILLED_MAP);
                         MapMeta meta = (MapMeta) map.getItemMeta();
                         meta.setMapView(view);
@@ -164,8 +178,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                         for (Map.Entry<Integer, ItemStack> entry : failedItems.entrySet()) {
                             player.getWorld().dropItem(player.getLocation(), entry.getValue());
                         }
-                        ClockManager manager = ClockManager.getInstance();
-                        manager.saveClock(view.getId(), clockName);
                     }
                 }
             }
