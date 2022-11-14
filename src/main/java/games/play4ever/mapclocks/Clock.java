@@ -16,6 +16,7 @@ public class Clock {
     // analog clock hands (hours and minutes)
     private BufferedImage hourHand;
     private BufferedImage minuteHand;
+    private BufferedImage center;
 
     // digital clock digits and separator (colon)
     private BufferedImage[] digits;
@@ -48,6 +49,7 @@ public class Clock {
         this.background = MapPalette.resizeImage(loadImage(new File(directory, "background.png")));
 
         if(this.clockType == TYPES.analog) {
+            this.center = loadImage(new File(directory, "center.png"));
             this.hourHand = loadImage(new File(directory, "hour_hand.png"));
             this.minuteHand = loadImage(new File(directory, "minute_hand.png"));
         } else {
@@ -77,6 +79,10 @@ public class Clock {
 
     public BufferedImage getBackground() {
         return background;
+    }
+
+    public BufferedImage getCenter() {
+        return center;
     }
 
     public BufferedImage getHourHand() {

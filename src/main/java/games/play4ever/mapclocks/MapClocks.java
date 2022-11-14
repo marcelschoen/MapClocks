@@ -18,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Allows to use maps as clocks.
@@ -25,7 +26,6 @@ import java.util.*;
  * @author Marcel Schoen
  */
 public final class MapClocks extends JavaPlugin implements CommandExecutor, TabCompleter {
-    private List<String> completions = new ArrayList<>();
     private final String CONFIG_FILENAME = "config.yml";
 
     /** Stores all configures clocks. */
@@ -42,7 +42,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         Objects.requireNonNull(getCommand("mapclocks")).setTabCompleter(this);
 
         // Plugin startup logic
-        completions = new ArrayList<>(Arrays.asList("reload", "help", "give"));
 
         readConfig();
         ClockManager clockManager = ClockManager.getInstance();
@@ -80,6 +79,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 saveResource("clocks/" + clockName + "/clock.yml", false);
                 Clock clock = new Clock(clockDir);
                 if(clock.getClockType() == Clock.TYPES.analog) {
+                    saveResource("clocks/" + clockName + "/center.png", false);
                     saveResource("clocks/" + clockName + "/minute_hand.png", false);
                     saveResource("clocks/" + clockName + "/hour_hand.png", false);
                 }
@@ -95,7 +95,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 if(subDir.isDirectory()) {
                     try {
                         clocks.put(subDirName, new Clock(subDir));
-                        completions.add("give " + subDirName);
                     } catch(InvalidConfigurationException ex) {
                         MapClocks.logError("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
                     }
@@ -118,19 +117,28 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        logInfo("===>>> onTabComplete: " + command.getName() + " / arguments: " + args.length);
+        logInfo("===>>> args: " + Arrays.asList(args).stream().collect(Collectors.toList()));
+        if(args != null && args.length > 0) {
+            if(args.length == 1) {
+                return Arrays.asList("reload", "help", "give");
+            } else if(args.length == 2) {
+                if(args[0].equalsIgnoreCase("give")) {
+                    return clocks.values().stream().map(c -> c.getName()).collect(Collectors.toList());
+                }
+            } else if(args.length == 3) {
+                return Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
+            }
+        }
         logInfo("->>> COMPLETE / command: " + command.getName() + " / alias: " + alias + " / args: " + (args == null ? "0" : args.length));
-        return completions;
+        return new ArrayList<>();
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-        logInfo("===>>> onCommand: " + command.getName());
         final String cmd = command.getName().toLowerCase();
         if (!cmd.equals("mapclocks") && !cmd.equals("mclocks")) {
             return false;
-        }
-        for(String arg : args) {
-            logInfo("===>>> argument: " + arg);
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
@@ -141,18 +149,15 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             showHelp(sender);
             return true;
         } else if (args[0].equalsIgnoreCase("give")) {
-            logInfo("Give clock...");
             if(args.length != 3) {
                 sender.sendMessage(ChatColor.RED + "Invalid arguments for 'give' command, must be 3, see help:");
                 showHelp(sender);
             } else {
                 String clockName = args[1];
-                logInfo("Clock name: " + clockName);
                 if(!clocks.containsKey(clockName)) {
                     sender.sendMessage(ChatColor.RED + "Clock '" + clockName + "' not found, check for typo.");
                 } else {
                     String playerName = args[2];
-                    logInfo("Player name: " + playerName);
                     Player player = Bukkit.getPlayer(playerName);
                     if(player == null) {
                         sender.sendMessage(ChatColor.RED + "Player '" + playerName + "' not found, check for typo.");

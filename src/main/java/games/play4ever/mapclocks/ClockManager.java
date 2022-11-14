@@ -6,11 +6,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.MapInitializeEvent;
+import org.bukkit.map.MapView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 public class ClockManager implements Listener {
@@ -21,38 +20,26 @@ public class ClockManager implements Listener {
         }
         return instance;
     }
+
     private CustomFile createdClockMapsStorage = new CustomFile();
 
-    private Map<Integer, String> savedClocks = new HashMap<Integer, String>();
-
-    public void init() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, MapClocks.getPlugin(MapClocks.class));
-    }
     @EventHandler
     public void onMapInitEvent(MapInitializeEvent event) {
-        /*
-        MapClocks.logInfo("Map initialization event");
+        MapClocks.logInfo("> onMapInitEvent / map ID: " + event.getMap().getId());
         if (hasClock(event.getMap().getId())) {
-            MapClocks.logInfo("Map ID exists");
+            String clockName = (String)getData().get("ids." + event.getMap().getId());
+            Clock clock = MapClocks.getClockByName(clockName);
             MapView view = event.getMap();
             view.getRenderers().clear();
-            String clockName = ClockManager.getInstance().getClock(view.getId());
-            MapClocks.logInfo("Clock name: " + clockName);
-            if(clockName == null) {
-                MapClocks.logError("Invalid map ID, no clock name found: " + view.getId());
-                return;
-            }
-            Clock clock = MapClocks.getClockByName(clockName);
-            MapClocks.logInfo("Clock: " + clock);
-            if(clock == null) {
-                MapClocks.logError("Invalid clock name, no clock found: " + clockName);
-                return;
-            }
             view.addRenderer(new ClockRenderer(clock));
             view.setScale(MapView.Scale.FARTHEST);
             view.setTrackingPosition(false);
         }
-         */
+    }
+
+    public void init() {
+        Bukkit.getServer().getPluginManager().registerEvents(this, MapClocks.getPlugin(MapClocks.class));
+        createdClockMapsStorage.reloadConfig();
     }
 
     public void saveClock(Integer mapId, String clockName) {
@@ -62,16 +49,13 @@ public class ClockManager implements Listener {
     }
 
     public boolean hasClock(int id) {
-        MapClocks.logInfo("--> hasClock " + id + ": " + savedClocks.containsKey(id));
-        return savedClocks.containsKey(id);
-    }
-    public String getClock(int id) {
-        return savedClocks.get(id);
+        return getData().get("ids." + id) != null;
     }
 
     public FileConfiguration getData() {
         return createdClockMapsStorage.getConfig();
     }
+
     public void saveData() {
         createdClockMapsStorage.saveConfig();
     }
@@ -85,6 +69,7 @@ public class ClockManager implements Listener {
         }
 
         public void reloadConfig() {
+            MapClocks.logInfo("> reloadConfig()");
             if (dataConfigFile == null) {
                 dataConfigFile = new File(plugin.getDataFolder(), name);
             }
