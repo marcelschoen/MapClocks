@@ -63,7 +63,7 @@ public class ClockRenderer extends MapRenderer {
         int drawLocationY = 64 - image.getHeight();
 
         AffineTransform tx = new AffineTransform();
-        tx.rotate(Math.toRadians(angle), image.getWidth() / 2, image.getHeight() / 2);
+        tx.rotate(Math.toRadians(angle), image.getWidth() / 2, image.getHeight());
 
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
         // Drawing the rotated image at the required drawing locations
