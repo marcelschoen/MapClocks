@@ -7,6 +7,7 @@ import org.bukkit.map.MapView;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -37,16 +38,27 @@ public class ClockRenderer extends MapRenderer {
             int currentMinute = now.getMinute();
             MapClocks.logInfo("> Hour: " + currentHour + " / minute: " + currentMinute);
 
-            int hourAngle = currentHour * (360 / 12); // TODO - add minutes
-            drawAnalogHand(g, clock.getHourHand(), hourAngle);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.translate(64, 64);
 
-            int minuteAngle = currentMinute * (360 / 60);
-            drawAnalogHand(g, clock.getMinuteHand(), minuteAngle);
+            int radius = clock.getRadius();
 
-            // draw center element over hands
-            int centerX = 64 - clock.getCenter().getWidth() / 2;
-            int centerY = 64 - clock.getCenter().getHeight() / 2;
-            g.drawImage(clock.getCenter(), centerX, centerY, null);
+            // Drawing the hour hand
+            float hourHandLen = radius / 2f;
+            Shape hourHand = new Line2D.Float(0f, 0f, 0f, -hourHandLen);
+            double minuteRot = currentMinute * Math.PI / 30d;
+            double hourRot = currentHour * Math.PI / 6d + minuteRot / 12d;
+            g2.setStroke(new BasicStroke(5f));
+            g2.setPaint(clock.getHourHandColor().getJavaColor());
+            g2.draw(AffineTransform.getRotateInstance(hourRot).createTransformedShape(hourHand));
+
+            // Drawing the minute hand
+            float minuteHandLen = 5f * radius / 6f;
+            Shape minuteHand = new Line2D.Float(0f, 0f, 0f, -minuteHandLen);
+            g2.setStroke(new BasicStroke(3f));
+            g2.setPaint(clock.getMinuteHandColor().getJavaColor());
+            g2.draw(AffineTransform.getRotateInstance(minuteRot).createTransformedShape(minuteHand));
+
         } else {
             int startX = 10; // TODO - implement correct
 

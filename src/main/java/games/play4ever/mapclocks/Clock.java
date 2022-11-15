@@ -15,13 +15,16 @@ public class Clock {
 
     private BufferedImage background;
 
-    // analog clock hands (hours and minutes)
-    private BufferedImage hourHand;
-    private BufferedImage minuteHand;
-    private BufferedImage center;
-
     /** Updated final image to display in maps. */
     private BufferedImage updated;
+
+    private MinecraftColors minuteHandColor = MinecraftColors.DARK_GRAY;
+    private MinecraftColors hourHandColor = MinecraftColors.DARK_GRAY;
+    private MinecraftColors centerColor = MinecraftColors.DARK_GRAY;
+
+    private int centerOffsetX = 64;
+    private int centerOffsetY = 64;
+    private int radius = 60;
 
     // digital clock digits and separator (colon)
     private BufferedImage[] digits;
@@ -45,6 +48,20 @@ public class Clock {
         config.load(new File(directory,"clock.yml"));
         this.clockType = TYPES.valueOf(config.getString("type"));
         this.clockRenderer = new ClockRenderer(this);
+
+        this.radius = config.getInt("radius", 60);
+
+        String minuteHandColorCode = config.getString("colors.minutes");
+        String hourHandColorCode = config.getString("colors.hours");
+        String centerColorCode = config.getString("colors.center");
+
+        this.minuteHandColor = MinecraftColors.getByCode(minuteHandColorCode, MinecraftColors.DARK_GRAY);
+        this.hourHandColor = MinecraftColors.getByCode(hourHandColorCode, MinecraftColors.DARK_GRAY);
+        this.centerColor = MinecraftColors.getByCode(centerColorCode, MinecraftColors.DARK_GRAY);
+
+        this.centerOffsetX = config.getInt("center.x", 64);
+        this.centerOffsetY = config.getInt("center.y", 64);
+
     }
 
     public BufferedImage getUpdated() {
@@ -59,14 +76,34 @@ public class Clock {
         return this.clockType;
     }
 
+    public MinecraftColors getMinuteHandColor() {
+        return minuteHandColor;
+    }
+
+    public MinecraftColors getHourHandColor() {
+        return hourHandColor;
+    }
+
+    public MinecraftColors getCenterColor() {
+        return centerColor;
+    }
+
+    public int getCenterOffsetX() {
+        return centerOffsetX;
+    }
+
+    public int getCenterOffsetY() {
+        return centerOffsetY;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
     public void initialize() throws InvalidConfigurationException {
         this.background = MapPalette.resizeImage(loadImage(new File(directory, "background.png")));
 
-        if(this.clockType == TYPES.analog) {
-            this.center = loadImage(new File(directory, "center.png"));
-            this.hourHand = loadImage(new File(directory, "hour_hand.png"));
-            this.minuteHand = loadImage(new File(directory, "minute_hand.png"));
-        } else {
+        if(this.clockType == TYPES.digital) {
             this.separator = loadImage(new File(directory, "separator.png"));
             for(int i = 0; i < 10; i++) {
                 this.digits[i] = loadImage(new File(directory, String.valueOf(i) + ".png"));
@@ -93,18 +130,6 @@ public class Clock {
 
     public BufferedImage getBackground() {
         return background;
-    }
-
-    public BufferedImage getCenter() {
-        return center;
-    }
-
-    public BufferedImage getHourHand() {
-        return hourHand;
-    }
-
-    public BufferedImage getMinuteHand() {
-        return minuteHand;
     }
 
     public BufferedImage[] getDigits() {

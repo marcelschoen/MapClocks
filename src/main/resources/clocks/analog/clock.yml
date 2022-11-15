@@ -24,14 +24,41 @@ type: analog
 # -----------------------------------------------------------------------------------
 # Analog clock info
 # -----------------------------------------------------------------------------------
-# An analog clock MUST have the following PNG files in its directory:
+# An analog clock must have the following PNG file in its directory:
 # 'background.png' - 128x128 pixel clock face.
-# 'hour_hand.png'
-# 'minute_hand.png'
-# - The graphics will automatically be aligned by their baseline (lower end).
 
-# Optional: Set the coordinate of the point where the two
-# digits are centered, and are moving around. By default,
-# this is the center of the clock (64/64).
-#center: 64,64
+# Optional: Define radius (larger radius increases length of minute and hour hands).
+radius: 54
 
+# Define the center point, where the hour and minute are rotating around.
+# The map size is 128x128 pixel, so the default is 64,64 (center).
+# These are the X and Y coordinates in pixels.
+center:
+  x: 64
+  y: 64
+
+# Optional: Define colors (Minecraft 16 color hex scheme)
+# for the hour and minute hand, and the center bubble.
+# Will default to dark grey if not specified.
+colors:
+  minutes: "&8"
+  hours: "&8"
+  center: "&8"
+
+# Color codes:
+#
+# Dark Red     - &4
+# Red          - &c
+# Gold         - &6
+# Yellow       - &e
+# Dark Green   - &2
+# Green        - &a
+# Aqua         - &b
+# Dark Aqua    - &3
+# Blue         - &9
+# Light Purple - &d
+# Dark Purple  - &5
+# White        - &f
+# Gray         - &7
+# Dark Gray    - &8
+# Black        - &0
