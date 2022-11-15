@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.map.MapPalette;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,8 @@ public class Clock {
     private int centerWidth = 4;
     private int radius = 60;
 
+    private Color backgroundColor = null;
+
     // digital clock digits and separator (colon)
     private BufferedImage[] digits;
     private BufferedImage separator;
@@ -52,6 +55,21 @@ public class Clock {
         config.load(new File(directory,"clock.yml"));
         this.clockType = TYPES.valueOf(config.getString("type"));
         this.clockRenderer = new ClockRenderer(this);
+
+        String backgroundColorTxt = config.getString("background-color");
+        if(backgroundColorTxt != null) {
+            try {
+                String redTxt = backgroundColorTxt.substring(0, backgroundColorTxt.indexOf(","));
+                String greenTxt = backgroundColorTxt.substring(backgroundColorTxt.indexOf(",") + 1, backgroundColorTxt.lastIndexOf(","));
+                String blueTxt = backgroundColorTxt.substring(backgroundColorTxt.lastIndexOf(",") + 1);
+                int red = Integer.parseInt(redTxt);
+                int green = Integer.parseInt(greenTxt);
+                int blue = Integer.parseInt(blueTxt);
+                this.backgroundColor = new Color(red, green, blue);
+            } catch(Exception e) {
+                MapClocks.logError("Failed to set background color: " + backgroundColorTxt + ", reason: " + e);
+            }
+        }
 
         this.radius = config.getInt("radius", 60);
 
@@ -82,6 +100,10 @@ public class Clock {
 
     public TYPES getType() {
         return this.clockType;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
     }
 
     public MinecraftColors getMinuteHandColor() {

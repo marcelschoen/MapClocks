@@ -1,6 +1,13 @@
 # Type is either 'analog' (with two digits) or 'digital' (00:00)
 type: analog
 
+# Optional: If the 128x128 background image contains transparent areas,
+# you can define a background color to be filled in these areas. If no
+# background color is defined, the item frame and/or the block behind
+# the clock will be visible there.
+# Hint: Use a plugin that allows to make item frames invisible!
+background-color: 228,228,234
+
 # -----------------------------------------------------------------------------------
 # Digital clock info
 # -----------------------------------------------------------------------------------

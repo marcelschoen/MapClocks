@@ -38,6 +38,15 @@ public class ClockRenderer extends MapRenderer {
             int currentHour = now.getHour() > 12 ? now.getHour() - 12 : now.getHour();
             int currentMinute = now.getMinute();
 
+            if(clock.getBackgroundColor() != null) {
+                BufferedImage newBackground = deepCopy(clock.getBackground());
+                g = newBackground.getGraphics();
+                g.setColor(clock.getBackgroundColor());
+                g.fillRect(0, 0, image.getWidth(), image.getHeight());
+                g.drawImage(clock.getBackground(), 0, 0, null);
+                image = newBackground;
+            }
+
             Graphics2D g2 = (Graphics2D) g;
             g2.translate(clock.getCenterOffsetX(), clock.getCenterOffsetY());
 
