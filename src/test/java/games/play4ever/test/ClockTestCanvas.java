@@ -1,7 +1,6 @@
 package games.play4ever.test;
 
 import games.play4ever.mapclocks.Clock;
-import games.play4ever.mapclocks.ClockRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,17 +10,17 @@ import java.io.File;
 
 public class ClockTestCanvas extends Canvas{
 
-    private ClockRenderer clockRenderer = null;
+    private Clock clock;
 
     public void paint(Graphics g) {
-        g.drawImage(this.clockRenderer.renderClock(), 0,0, 256, 256, this);
+        this.clock.updateImage();
+        g.drawImage(this.clock.getUpdated(), 0,0, 256, 256, this);
 //        g.drawImage(this.clockRenderer.renderClock(), 0,0,this);
     }
 
     private ClockTestCanvas(File clockDir) throws Exception {
-        Clock clock = new Clock(clockDir);
+        this.clock = new Clock(clockDir);
         clock.initialize();
-        this.clockRenderer = new ClockRenderer(clock);
     }
 
     public static void main(String[] args) {

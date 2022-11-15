@@ -11,7 +11,8 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class ClockRenderer extends MapRenderer {
 
@@ -31,8 +32,8 @@ public class ClockRenderer extends MapRenderer {
         BufferedImage image = deepCopy(clock.getBackground());
         Graphics g = image.getGraphics();
         if(clock.getClockType() == Clock.TYPES.analog) {
-            LocalDateTime now = LocalDateTime.now();
-            int currentHour = now.getHour() > 11 ? now.getHour() / 2 : now.getHour();
+            ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+            int currentHour = now.getHour() > 12 ? now.getHour() - 12 : now.getHour();
             int currentMinute = now.getMinute();
             MapClocks.logInfo("> Hour: " + currentHour + " / minute: " + currentMinute);
 

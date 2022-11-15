@@ -11,12 +11,17 @@ import java.io.IOException;
 
 public class Clock {
 
+    private ClockRenderer clockRenderer = null;
+
     private BufferedImage background;
 
     // analog clock hands (hours and minutes)
     private BufferedImage hourHand;
     private BufferedImage minuteHand;
     private BufferedImage center;
+
+    /** Updated final image to display in maps. */
+    private BufferedImage updated;
 
     // digital clock digits and separator (colon)
     private BufferedImage[] digits;
@@ -39,6 +44,15 @@ public class Clock {
         YamlConfiguration config = new YamlConfiguration();
         config.load(new File(directory,"clock.yml"));
         this.clockType = TYPES.valueOf(config.getString("type"));
+        this.clockRenderer = new ClockRenderer(this);
+    }
+
+    public BufferedImage getUpdated() {
+        return this.updated;
+    }
+
+    public void updateImage() {
+        this.updated = this.clockRenderer.renderClock();
     }
 
     public TYPES getType() {
