@@ -14,10 +14,10 @@ public class ClockUpdateThread implements Runnable {
     public void run() {
         while(running) {
             try {
+                ClockManager.updateAllClockImages();
                 for (int i = 0; i < 60 && running; i++) {
                     Thread.sleep(1000);
                 }
-                MapClocks.getClocks().stream().forEach(clock -> clock.updateImage());
             } catch(Exception e) {
                 running = false;
             }

@@ -24,6 +24,10 @@ public class Clock {
 
     private int centerOffsetX = 64;
     private int centerOffsetY = 64;
+
+    private int minuteHandWidth = 6;
+    private int hourHandWidth = 10;
+    private int centerWidth = 4;
     private int radius = 60;
 
     // digital clock digits and separator (colon)
@@ -62,6 +66,10 @@ public class Clock {
         this.centerOffsetX = config.getInt("center.x", 64);
         this.centerOffsetY = config.getInt("center.y", 64);
 
+        this.minuteHandWidth = config.getInt("width.minute", 6);
+        this.hourHandWidth = config.getInt("width.hour", 8);
+        this.centerWidth = config.getInt("width.center", 12);
+
     }
 
     public BufferedImage getUpdated() {
@@ -98,6 +106,18 @@ public class Clock {
 
     public int getRadius() {
         return radius;
+    }
+
+    public int getCenterWidth() {
+        return centerWidth;
+    }
+
+    public int getMinuteHandWidth() {
+        return minuteHandWidth;
+    }
+
+    public int getHourHandWidth() {
+        return hourHandWidth;
     }
 
     public void initialize() throws InvalidConfigurationException {

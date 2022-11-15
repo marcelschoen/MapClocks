@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 public final class MapClocks extends JavaPlugin implements CommandExecutor, TabCompleter {
     private final String CONFIG_FILENAME = "config.yml";
 
-    /** Stores all configures clocks. */
-    private static Map<String, Clock> clocks = new HashMap<>();
-
     private Map<String, Clock.TYPES> includedClocks = new HashMap<>();
 
     @Override
@@ -46,14 +43,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         readConfig();
         ClockManager clockManager = ClockManager.getInstance();
         clockManager.init();
-    }
-
-    public static Clock getClockByName(String clockName) {
-        return clocks.get(clockName);
-    }
-
-    public static List<Clock> getClocks() {
-        return clocks.values().stream().collect(Collectors.toList());
     }
 
     public static void logInfo(String message) {
@@ -82,11 +71,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 clockDir.mkdirs();
                 saveResource("clocks/" + clockName + "/clock.yml", false);
                 Clock clock = new Clock(clockDir);
-                if(clock.getClockType() == Clock.TYPES.analog) {
-                    saveResource("clocks/" + clockName + "/center.png", false);
-                    saveResource("clocks/" + clockName + "/minute_hand.png", false);
-                    saveResource("clocks/" + clockName + "/hour_hand.png", false);
-                }
                 saveResource("clocks/" + clockName + "/background.png", false);
             }
 
@@ -98,17 +82,14 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 File subDir = new File(clocksDirectory, subDirName);
                 if(subDir.isDirectory()) {
                     try {
-                        clocks.put(subDirName, new Clock(subDir));
+                        ClockManager.addClock(new Clock(subDir));
                     } catch(InvalidConfigurationException ex) {
                         MapClocks.logError("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
                     }
                 }
             }
-            logInfo("[MapClocks] Number of clocks found: " + clocks.size());
 
-            for(Clock clock : clocks.values()) {
-                clock.initialize();
-            }
+            ClockManager.initializeAllClocks();
 
             logInfo("[MapClocks] Configuration loaded.");
 
@@ -128,7 +109,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 return Arrays.asList("reload", "help", "give");
             } else if(args.length == 2) {
                 if(args[0].equalsIgnoreCase("give")) {
-                    return clocks.values().stream().map(c -> c.getName()).collect(Collectors.toList());
+                    return ClockManager.getClockNames();
                 }
             } else if(args.length == 3) {
                 return Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
@@ -158,7 +139,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 showHelp(sender);
             } else {
                 String clockName = args[1];
-                if(!clocks.containsKey(clockName)) {
+                if(!ClockManager.hasClock(clockName)) {
                     sender.sendMessage(ChatColor.RED + "Clock '" + clockName + "' not found, check for typo.");
                 } else {
                     String playerName = args[2];
@@ -170,7 +151,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                         MapView view = Bukkit.createMap(player.getWorld());
 
                         view.getRenderers().clear();
-                        Clock clock = MapClocks.getClockByName(clockName);
+                        Clock clock = ClockManager.getClockByName(clockName);
                         view.addRenderer(new ClockRenderer(clock));
                         view.setScale(MapView.Scale.FARTHEST);
                         view.setTrackingPosition(false);

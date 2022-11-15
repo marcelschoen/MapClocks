@@ -28,22 +28,30 @@ type: analog
 # 'background.png' - 128x128 pixel clock face.
 
 # Optional: Define radius (larger radius increases length of minute and hour hands).
-radius: 54
+radius: 58
 
 # Define the center point, where the hour and minute are rotating around.
 # The map size is 128x128 pixel, so the default is 64,64 (center).
 # These are the X and Y coordinates in pixels.
+# "size" defines the radius of the center know in pixels (4 equals an 8-pixel which knob)
 center:
   x: 64
   y: 64
+
+# Width of hour (8 pixels) and minute (6 pixels) hands, and width of the
+# center knob (defaults to 12 pixels)
+width:
+  minute: 3
+  hour: 5
+  center: 14
 
 # Optional: Define colors (Minecraft 16 color hex scheme)
 # for the hour and minute hand, and the center bubble.
 # Will default to dark grey if not specified.
 colors:
   minutes: "&8"
-  hours: "&8"
-  center: "&8"
+  hours: "&0"
+  center: "&4"
 
 # Color codes:
 #

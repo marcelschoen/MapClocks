@@ -1,6 +1,7 @@
 package games.play4ever.mapclocks;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,11 @@ import org.bukkit.map.MapView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * Manages mapping clocks to maps, storing and reloading
@@ -20,11 +25,46 @@ import java.util.logging.Level;
  */
 public class ClockManager implements Listener {
     private static ClockManager instance = null;
+
+    /** Stores all configures clocks. */
+    private static Map<String, Clock> clocks = new HashMap<>();
+
     public static ClockManager getInstance() {
         if (instance == null) {
             instance = new ClockManager();
         }
         return instance;
+    }
+
+    public static void addClock(Clock clock) {
+        clocks.put(clock.getName(), clock);
+    }
+
+    public static boolean hasClock(String name) {
+        return clocks.containsKey(name);
+    }
+
+    public static List<String> getClockNames() {
+        return clocks.keySet().stream().collect(Collectors.toList());
+    }
+
+    public static void initializeAllClocks() {
+        clocks.values().stream().forEach(clock -> {
+            try {
+                clock.initialize();
+            } catch (InvalidConfigurationException e) {
+                MapClocks.logError("Failed to initialize clock: " + clock.getName() + ", reason: " + e);
+            }
+        });
+    }
+
+    public static void updateAllClockImages() {
+        MapClocks.logInfo("Updating " + clocks.size() + " clock images...");
+        clocks.values().stream().forEach(clock -> clock.updateImage() );
+    }
+
+    public static Clock getClockByName(String clockName) {
+        return clocks.get(clockName);
     }
 
     private CustomFile createdClockMapsStorage = new CustomFile();
@@ -34,7 +74,7 @@ public class ClockManager implements Listener {
         MapClocks.logInfo("> onMapInitEvent / map ID: " + event.getMap().getId());
         if (hasClock(event.getMap().getId())) {
             String clockName = (String)getData().get("ids." + event.getMap().getId());
-            Clock clock = MapClocks.getClockByName(clockName);
+            Clock clock = getClockByName(clockName);
             MapView view = event.getMap();
             view.getRenderers().clear();
             view.addRenderer(new ClockRenderer(clock));
