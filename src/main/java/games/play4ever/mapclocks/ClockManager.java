@@ -12,6 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
+/**
+ * Manages mapping clocks to maps, storing and reloading
+ * map data etc.
+ *
+ * @author Marcel Schoen
+ */
 public class ClockManager implements Listener {
     private static ClockManager instance = null;
     public static ClockManager getInstance() {

@@ -52,6 +52,10 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         return clocks.get(clockName);
     }
 
+    public static List<Clock> getClocks() {
+        return clocks.values().stream().collect(Collectors.toList());
+    }
+
     public static void logInfo(String message) {
         PluginLogger.getLogger(MapClocks.class.getName()).info("[MapClocks] " + message);
     }

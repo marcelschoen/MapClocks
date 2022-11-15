@@ -1,6 +1,7 @@
 package games.play4ever.test;
 
 import games.play4ever.mapclocks.Clock;
+import games.play4ever.mapclocks.ClockUpdateThread;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,8 @@ public class ClockTestCanvas extends Canvas{
 
     private Clock clock;
 
+
+
     public void paint(Graphics g) {
         this.clock.updateImage();
         g.drawImage(this.clock.getUpdated(), 0,0, 256, 256, this);
@@ -21,10 +24,12 @@ public class ClockTestCanvas extends Canvas{
     private ClockTestCanvas(File clockDir) throws Exception {
         this.clock = new Clock(clockDir);
         clock.initialize();
+        ClockUpdateThread.launch();
     }
 
     public static void main(String[] args) {
         try {
+
             File clockDir = new File("src/main/resources/clocks/analog");
             ClockTestCanvas m = new ClockTestCanvas(clockDir);
             JFrame f = new JFrame();
@@ -32,7 +37,7 @@ public class ClockTestCanvas extends Canvas{
             f.setBounds(300, 300, 260, 340);
             f.addWindowListener(new WindowAdapter(){
                 public void windowClosing(WindowEvent we){
-                    System.exit(0);
+                    ClockUpdateThread.stopUpdates(); System.exit(0);
                 }
             });
             f.setVisible(true);
