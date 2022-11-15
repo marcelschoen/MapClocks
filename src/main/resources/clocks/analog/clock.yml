@@ -1,4 +1,4 @@
-# Type is either 'analog' (with two digits) or 'digital' (00:00)
+# Type is either 'analog' (with two hands) or 'digital' (00:00)
 type: analog
 
 # Optional: If the 128x128 background image contains transparent areas,
@@ -7,6 +7,10 @@ type: analog
 # the clock will be visible there.
 # Hint: Use a plugin that allows to make item frames invisible!
 background-color: 228,228,234
+
+# NOTE: Every clock MUST have the following PNG file in its directory:
+#
+# 'background.png' - 128x128 pixel clock face.
 
 # -----------------------------------------------------------------------------------
 # Digital clock info
@@ -31,22 +35,20 @@ background-color: 228,228,234
 # -----------------------------------------------------------------------------------
 # Analog clock info
 # -----------------------------------------------------------------------------------
-# An analog clock must have the following PNG file in its directory:
-# 'background.png' - 128x128 pixel clock face.
 
 # Optional: Define radius (larger radius increases length of minute and hour hands).
+# Defaults to 60 pixels.
 radius: 58
 
 # Define the center point, where the hour and minute are rotating around.
 # The map size is 128x128 pixel, so the default is 64,64 (center).
 # These are the X and Y coordinates in pixels.
-# "size" defines the radius of the center know in pixels (4 equals an 8-pixel which knob)
 center:
   x: 64
   y: 64
 
-# Width of hour (8 pixels) and minute (6 pixels) hands, and width of the
-# center knob (defaults to 12 pixels)
+# Width in pixels of hour (default: 8) and minute (default: 6) hands,
+# and width of the center knob (default: 12)
 width:
   minute: 3
   hour: 5

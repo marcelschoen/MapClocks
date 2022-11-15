@@ -53,7 +53,7 @@ public class ClockRenderer extends MapRenderer {
             int radius = clock.getRadius();
 
             // Drawing the hour hand
-            float hourHandLen = radius / 2.5f;
+            float hourHandLen = radius / 2f;
             Shape hourHand = new Line2D.Float(0f, 0f, 0f, -hourHandLen);
             double minuteRot = currentMinute * Math.PI / 30d;
             double hourRot = currentHour * Math.PI / 6d + minuteRot / 12d;
