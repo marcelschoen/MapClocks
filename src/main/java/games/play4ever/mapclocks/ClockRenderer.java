@@ -37,7 +37,7 @@ public class ClockRenderer extends MapRenderer {
             MapClocks.logInfo("> Hour: " + currentHour + " / minute: " + currentMinute);
 
             int hourAngle = currentHour * (360 / 12); // TODO - add minutes
-            //drawAnalogHand(g, clock.getHourHand(), hourAngle);
+            drawAnalogHand(g, clock.getHourHand(), hourAngle);
 
             int minuteAngle = currentMinute * (360 / 60);
             drawAnalogHand(g, clock.getMinuteHand(), minuteAngle);
