@@ -69,6 +69,8 @@ public class ClockManager implements Listener {
 
     private FileStorage createdClockMapsStorage = FileStorage.getInstance();
 
+    // TODO - HANDLE MAP DESTRUCTION / DELETION (remove from storage)
+
     @EventHandler
     public void onMapInitEvent(MapInitializeEvent event) {
         MapClocks.logInfo("> onMapInitEvent / map ID: " + event.getMap().getId());

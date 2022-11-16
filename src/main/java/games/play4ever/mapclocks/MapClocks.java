@@ -112,18 +112,27 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         logInfo("Loaded MapClocks configuration.");
     }
 
+    private static boolean isConsoleOrOP(CommandSender sender) {
+        return (!(sender instanceof Player) || ((Player)sender).isOp());
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        boolean consoleOrOP = isConsoleOrOP(sender);
         if(args != null && args.length > 0) {
             if(args.length == 1) {
-                return Arrays.asList("reload", "help", "give", "offset");
+                if(consoleOrOP) {
+                    return Arrays.asList("reload", "help", "give", "offset");
+                } else {
+                    return Arrays.asList("help", "offset");
+                }
             } else if(args.length == 2) {
-                if(args[0].equalsIgnoreCase("give")) {
+                if(args[0].equalsIgnoreCase("give") && consoleOrOP) {
                     return ClockManager.getClockNames();
                 } else if(args[0].equalsIgnoreCase("offset")) {
                     return offsets;
                 }
-            } else if(args.length == 3) {
+            } else if(args.length == 3 && consoleOrOP) {
                 return Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
             }
         }
@@ -132,12 +141,14 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        boolean consoleOrOP = isConsoleOrOP(sender);
+
         final String cmd = command.getName().toLowerCase();
         if (!cmd.equals("mapclocks") && !cmd.equals("mclocks")) {
             return false;
         }
 
-        if (args[0].equalsIgnoreCase("reload")) {
+        if (args[0].equalsIgnoreCase("reload") && consoleOrOP) {
             logInfo("Reloading MapClocks configuration...");
             readConfig();
             return true;
@@ -160,7 +171,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                     sender.sendMessage("Offset value must be a number ranging from -12 to 12!");
                 }
             }
-        } else if (args[0].equalsIgnoreCase("give")) {
+        } else if (args[0].equalsIgnoreCase("give") && consoleOrOP) {
             if(args.length != 3) {
                 sender.sendMessage(ChatColor.RED + "Invalid arguments for 'give' command, must be 3, see help:");
                 showHelp(sender);
@@ -206,8 +217,11 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     private void showHelp(final CommandSender sender) {
         sender.sendMessage(ChatColor.GREEN + "MapClocks commands:");
         sender.sendMessage(ChatColor.GREEN + "help - shows this help");
-        sender.sendMessage(ChatColor.GREEN + "give <clock> <playername> - OP/console only: Give clock <clockname> to player <player>");
-        sender.sendMessage(ChatColor.GREEN + "reload - OP/console only: reload MapClocks configuration");
+        sender.sendMessage(ChatColor.GREEN + "offset - set your timezone offset");
+        if(isConsoleOrOP(sender)) {
+            sender.sendMessage(ChatColor.GREEN + "give <clock> <playername> - OP/console only: Give clock <clockname> to player <player>");
+            sender.sendMessage(ChatColor.GREEN + "reload - OP/console only: reload MapClocks configuration");
+        }
     }
 
     @Override

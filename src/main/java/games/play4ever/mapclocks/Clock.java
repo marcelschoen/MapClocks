@@ -100,7 +100,6 @@ public class Clock {
         } else if(index > 12) {
             index -= 12;
         }
-        MapClocks.logInfo(">> get updated image no. " + (index - 1));
         return this.updated[index - 1];
     }
 
