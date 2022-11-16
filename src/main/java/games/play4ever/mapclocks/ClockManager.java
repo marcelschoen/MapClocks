@@ -2,19 +2,14 @@ package games.play4ever.mapclocks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.MapInitializeEvent;
 import org.bukkit.map.MapView;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +48,7 @@ public class ClockManager implements Listener {
     }
 
     public static void initializeAllClocks() {
+        MapClocks.logInfo("-> initialize all clocks");
         clocks.values().stream().forEach(clock -> {
             try {
                 clock.initialize();
@@ -71,13 +67,15 @@ public class ClockManager implements Listener {
         return clocks.get(clockName);
     }
 
-    private CustomFile createdClockMapsStorage = new CustomFile();
+    private FileStorage createdClockMapsStorage = FileStorage.getInstance();
 
     @EventHandler
     public void onMapInitEvent(MapInitializeEvent event) {
         MapClocks.logInfo("> onMapInitEvent / map ID: " + event.getMap().getId());
-        if (hasClock(event.getMap().getId())) {
-            String clockName = (String)getData().get("ids." + event.getMap().getId());
+        int id = event.getMap().getId();
+        boolean hasClock = createdClockMapsStorage.getConfig().get("ids." + id) != null;
+        if (hasClock) {
+            String clockName = (String)createdClockMapsStorage.getConfig().get("ids." + id);
             Clock clock = getClockByName(clockName);
             MapView view = event.getMap();
             view.getRenderers().clear();
@@ -94,55 +92,7 @@ public class ClockManager implements Listener {
 
     public void saveClock(Integer mapId, String clockName) {
         MapClocks.logInfo(">> save map '" + mapId + "' with clock: " + clockName);
-        getData().set("ids." + mapId, clockName);
-        saveData();
-    }
-
-    public boolean hasClock(int id) {
-        return getData().get("ids." + id) != null;
-    }
-
-    public FileConfiguration getData() {
-        return createdClockMapsStorage.getConfig();
-    }
-
-    public void saveData() {
+        createdClockMapsStorage.getConfig().set("ids." + mapId, clockName);
         createdClockMapsStorage.saveConfig();
-    }
-    class CustomFile {
-        private final MapClocks plugin = MapClocks.getPlugin(MapClocks.class);
-        private FileConfiguration dataConfig = null;
-        private File dataConfigFile = null;
-        private final String name = "clockMapData.yml";
-        public CustomFile() {
-            this.plugin.saveResource(name, false);
-        }
-
-        public void reloadConfig() {
-            MapClocks.logInfo("> reloadConfig()");
-            if (dataConfigFile == null) {
-                dataConfigFile = new File(plugin.getDataFolder(), name);
-            }
-            this.dataConfig = YamlConfiguration.loadConfiguration(dataConfigFile);
-        }
-
-        public FileConfiguration getConfig() {
-            if (this.dataConfig == null) {
-                reloadConfig();
-            }
-            return this.dataConfig;
-        }
-
-        public void saveConfig() {
-            if ((dataConfig == null) || (dataConfigFile == null)) {
-                return;
-            }
-            try {
-                getConfig().save(dataConfigFile);
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "Could not save config to "
-                        + dataConfigFile, e);
-            }
-        }
     }
 }

@@ -22,7 +22,6 @@ public class ClockTestCanvas extends Canvas{
         ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         int currentHour = now.getHour() > 12 ? now.getHour() - 12 : now.getHour();
         g.drawImage(this.clock.getUpdated(currentHour, 0), 0,0, 256, 256, this);
-//        g.drawImage(this.clockRenderer.renderClock(), 0,0,this);
     }
 
     private ClockTestCanvas(File clockDir) throws Exception {
@@ -35,7 +34,6 @@ public class ClockTestCanvas extends Canvas{
 
     public static void main(String[] args) {
         try {
-
             File clockDir = new File("src/main/resources/clocks/analog");
             ClockTestCanvas m = new ClockTestCanvas(clockDir);
             JFrame f = new JFrame();

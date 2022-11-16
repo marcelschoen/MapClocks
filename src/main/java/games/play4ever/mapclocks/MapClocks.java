@@ -30,8 +30,16 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     private Map<String, Clock.TYPES> includedClocks = new HashMap<>();
 
+    private List<String> offsets = Arrays.asList(
+            "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1",
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+
+    private FileStorage userDataStorage = null;
+
     @Override
     public void onEnable() {
+        userDataStorage = FileStorage.getInstance();
+
         includedClocks.put("analog", Clock.TYPES.analog);
 
         // Prefix as defined in "plugin.yml"
@@ -93,6 +101,8 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
             ClockManager.initializeAllClocks();
 
+            ClockManager.updateAllClockImages();
+
             logInfo("[MapClocks] Configuration loaded.");
 
         } catch (Exception e) {
@@ -106,10 +116,12 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if(args != null && args.length > 0) {
             if(args.length == 1) {
-                return Arrays.asList("reload", "help", "give");
+                return Arrays.asList("reload", "help", "give", "offset");
             } else if(args.length == 2) {
                 if(args[0].equalsIgnoreCase("give")) {
                     return ClockManager.getClockNames();
+                } else if(args[0].equalsIgnoreCase("offset")) {
+                    return offsets;
                 }
             } else if(args.length == 3) {
                 return Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
@@ -132,6 +144,22 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         } else if (args[0].equalsIgnoreCase("help")) {
             showHelp(sender);
             return true;
+        } else if (args[0].equalsIgnoreCase("offset")) {
+            if(sender.getName() != null) {
+                try {
+                    int value = Integer.parseInt(args[1]);
+                    if(value < -12 || value > 12) {
+                        sender.sendMessage("Offset value must be a number ranging from -12 to 12!");
+                    } else {
+                        userDataStorage.getConfig().set("players." + sender.getName() + ".offset", value);
+                        userDataStorage.saveConfig();
+                        sender.sendMessage("Offset set to " + value);
+                    }
+                } catch(Exception e) {
+                    logError("Invalid offset. Reason: " + e);
+                    sender.sendMessage("Offset value must be a number ranging from -12 to 12!");
+                }
+            }
         } else if (args[0].equalsIgnoreCase("give")) {
             if(args.length != 3) {
                 sender.sendMessage(ChatColor.RED + "Invalid arguments for 'give' command, must be 3, see help:");

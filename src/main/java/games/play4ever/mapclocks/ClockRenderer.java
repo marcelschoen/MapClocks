@@ -30,10 +30,12 @@ public class ClockRenderer extends MapRenderer {
 
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
+        String playerKey = "players." + player.getName() + ".offset";
+        int offset = (Integer)FileStorage.getInstance().getConfig().get(playerKey, 0);
         view.setTrackingPosition(false);
         ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         int currentHour = now.getHour() > 12 ? now.getHour() - 12 : now.getHour();
-        canvas.drawImage(0,0, clock.getUpdated(currentHour, 0)); // TODO - OFFSET
+        canvas.drawImage(0,0, clock.getUpdated(currentHour, offset)); // TODO - OFFSET
     }
 
     public BufferedImage renderClock(int hour) {

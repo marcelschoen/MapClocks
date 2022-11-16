@@ -100,11 +100,13 @@ public class Clock {
         } else if(index > 12) {
             index -= 12;
         }
+        MapClocks.logInfo(">> get updated image no. " + (index - 1));
         return this.updated[index - 1];
     }
 
     public void updateImages() {
         for(int hour = 0; hour < 12; hour ++) {
+            MapClocks.logInfo("-> update clock image no. " + hour);
             this.updated[hour] = this.clockRenderer.renderClock(hour);
         }
     }
