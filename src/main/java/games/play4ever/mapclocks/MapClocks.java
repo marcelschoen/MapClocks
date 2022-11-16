@@ -60,6 +60,8 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     private void readConfig() {
 
         try {
+            ClockManager.clearClocks();
+
             File clocksDir = new File(getDataFolder(), "clocks");
             clocksDir.mkdirs();
             File configFile = new File(getDataFolder(), CONFIG_FILENAME);
@@ -70,7 +72,7 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 File clockDir = new File(clocksDir, clockName);
                 clockDir.mkdirs();
                 saveResource("clocks/" + clockName + "/clock.yml", false);
-                Clock clock = new Clock(clockDir);
+                //Clock clock = new Clock(clockDir);
                 saveResource("clocks/" + clockName + "/background.png", false);
             }
 
@@ -102,8 +104,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        logInfo("===>>> onTabComplete: " + command.getName() + " / arguments: " + args.length);
-        logInfo("===>>> args: " + Arrays.asList(args).stream().collect(Collectors.toList()));
         if(args != null && args.length > 0) {
             if(args.length == 1) {
                 return Arrays.asList("reload", "help", "give");
@@ -115,7 +115,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                 return Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
             }
         }
-        logInfo("->>> COMPLETE / command: " + command.getName() + " / alias: " + alias + " / args: " + (args == null ? "0" : args.length));
         return new ArrayList<>();
     }
 

@@ -36,6 +36,10 @@ public class ClockManager implements Listener {
         return instance;
     }
 
+    public static void clearClocks() {
+        clocks.clear();
+    }
+
     public static void addClock(Clock clock) {
         clocks.put(clock.getName(), clock);
     }
@@ -60,7 +64,7 @@ public class ClockManager implements Listener {
 
     public static void updateAllClockImages() {
         MapClocks.logInfo("Updating " + clocks.size() + " clock images...");
-        clocks.values().stream().forEach(clock -> clock.updateImage() );
+        clocks.values().stream().forEach(clock -> clock.updateImages() );
     }
 
     public static Clock getClockByName(String clockName) {

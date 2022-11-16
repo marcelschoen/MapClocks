@@ -16,8 +16,11 @@ public class Clock {
 
     private BufferedImage background;
 
-    /** Updated final image to display in maps. */
-    private BufferedImage updated;
+    /**
+     * Updated final images to display in maps. 12 images are updated every minute,
+     * to have one image for every time zone (offset).
+     */
+    private BufferedImage[] updated = new BufferedImage[12];
 
     private MinecraftColors minuteHandColor = MinecraftColors.DARK_GRAY;
     private MinecraftColors hourHandColor = MinecraftColors.DARK_GRAY;
@@ -90,12 +93,20 @@ public class Clock {
 
     }
 
-    public BufferedImage getUpdated() {
-        return this.updated;
+    public BufferedImage getUpdated(int hour, int offset) {
+        int index = hour + offset;
+        if(index < 0) {
+            index += 12;
+        } else if(index > 12) {
+            index -= 12;
+        }
+        return this.updated[index - 1];
     }
 
-    public void updateImage() {
-        this.updated = this.clockRenderer.renderClock();
+    public void updateImages() {
+        for(int hour = 0; hour < 12; hour ++) {
+            this.updated[hour] = this.clockRenderer.renderClock(hour);
+        }
     }
 
     public TYPES getType() {

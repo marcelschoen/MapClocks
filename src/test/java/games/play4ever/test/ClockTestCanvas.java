@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class ClockTestCanvas extends Canvas{
 
@@ -17,7 +19,9 @@ public class ClockTestCanvas extends Canvas{
 
 
     public void paint(Graphics g) {
-        g.drawImage(this.clock.getUpdated(), 0,0, 256, 256, this);
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+        int currentHour = now.getHour() > 12 ? now.getHour() - 12 : now.getHour();
+        g.drawImage(this.clock.getUpdated(currentHour, 0), 0,0, 256, 256, this);
 //        g.drawImage(this.clockRenderer.renderClock(), 0,0,this);
     }
 
