@@ -26,8 +26,8 @@ public class Clock {
     private MinecraftColors hourHandColor = MinecraftColors.DARK_GRAY;
     private MinecraftColors centerColor = MinecraftColors.DARK_GRAY;
 
-    private int centerOffsetX = 64;
-    private int centerOffsetY = 64;
+    private int offsetX = 64;
+    private int offsetY = 64;
 
     private int minuteHandWidth = 6;
     private int hourHandWidth = 10;
@@ -37,7 +37,7 @@ public class Clock {
     private Color backgroundColor = null;
 
     // digital clock digits and separator (colon)
-    private BufferedImage[] digits;
+    private BufferedImage[] digits = new BufferedImage[10];
     private BufferedImage separator;
 
     public enum TYPES {
@@ -84,8 +84,8 @@ public class Clock {
         this.hourHandColor = MinecraftColors.getByCode(hourHandColorCode, MinecraftColors.DARK_GRAY);
         this.centerColor = MinecraftColors.getByCode(centerColorCode, MinecraftColors.DARK_GRAY);
 
-        this.centerOffsetX = config.getInt("center.x", 64);
-        this.centerOffsetY = config.getInt("center.y", 64);
+        this.offsetX = config.getInt("offset.x", 64);
+        this.offsetY = config.getInt("offset.y", 64);
 
         this.minuteHandWidth = config.getInt("width.minute", 6);
         this.hourHandWidth = config.getInt("width.hour", 8);
@@ -95,7 +95,7 @@ public class Clock {
 
     public BufferedImage getUpdated(int hour, int offset) {
         int index = hour + offset;
-        if(index < 0) {
+        if(index < 1) {
             index += 12;
         } else if(index > 12) {
             index -= 12;
@@ -130,12 +130,12 @@ public class Clock {
         return centerColor;
     }
 
-    public int getCenterOffsetX() {
-        return centerOffsetX;
+    public int getOffsetX() {
+        return offsetX;
     }
 
-    public int getCenterOffsetY() {
-        return centerOffsetY;
+    public int getOffsetY() {
+        return offsetY;
     }
 
     public int getRadius() {

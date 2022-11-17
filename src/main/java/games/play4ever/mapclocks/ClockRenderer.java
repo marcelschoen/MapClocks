@@ -28,6 +28,8 @@ public class ClockRenderer extends MapRenderer {
         this.clock = clock;
     }
 
+
+
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
         String playerKey = "players." + player.getName() + ".offset";
@@ -41,21 +43,23 @@ public class ClockRenderer extends MapRenderer {
     public BufferedImage renderClock(int hour) {
         BufferedImage image = deepCopy(clock.getBackground());
         Graphics g = image.getGraphics();
+
+        if(clock.getBackgroundColor() != null) {
+            BufferedImage newBackground = deepCopy(clock.getBackground());
+            g = newBackground.getGraphics();
+            g.setColor(clock.getBackgroundColor());
+            g.fillRect(0, 0, image.getWidth(), image.getHeight());
+            g.drawImage(clock.getBackground(), 0, 0, null);
+            image = newBackground;
+        }
+
+        Graphics2D g2 = (Graphics2D) g;
+        g2.translate(clock.getOffsetX(), clock.getOffsetY());
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+        int currentMinute = now.getMinute();
+
         if(clock.getClockType() == Clock.TYPES.analog) {
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
-            int currentMinute = now.getMinute();
-
-            if(clock.getBackgroundColor() != null) {
-                BufferedImage newBackground = deepCopy(clock.getBackground());
-                g = newBackground.getGraphics();
-                g.setColor(clock.getBackgroundColor());
-                g.fillRect(0, 0, image.getWidth(), image.getHeight());
-                g.drawImage(clock.getBackground(), 0, 0, null);
-                image = newBackground;
-            }
-
-            Graphics2D g2 = (Graphics2D) g;
-            g2.translate(clock.getCenterOffsetX(), clock.getCenterOffsetY());
 
             int radius = clock.getRadius();
 
@@ -82,12 +86,33 @@ public class ClockRenderer extends MapRenderer {
             g2.fill(center);
 
         } else {
-            int startX = 10; // TODO - implement correct
 
+            System.out.println("---> HOUR: " + hour);
+            int hourNumber = hour > 9 ? 1 : 0;
+            drawDigit(clock, g, hourNumber);
+
+            g2.translate(clock.getDigits()[hourNumber].getWidth(), 0);
+            hourNumber = hour > 9 ? hour - 10 : hour;
+            drawDigit(clock, g, hourNumber);
+
+            g2.translate(clock.getDigits()[hourNumber].getWidth(), 0);
+            g.drawImage(clock.getSeparator(), 0, 0, null);
+
+            g2.translate(clock.getSeparator().getWidth(), 0);
+            int minuteNumber = currentMinute / 10;
+            drawDigit(clock, g, minuteNumber);
+
+            g2.translate(clock.getDigits()[minuteNumber].getWidth(), 0);
+            minuteNumber = currentMinute - ((currentMinute / 10) * 10);
+            drawDigit(clock, g, minuteNumber);
         }
         g.dispose();
 
         return image;
+    }
+
+    private static void drawDigit(Clock clock, Graphics g, int number) {
+        g.drawImage(clock.getDigits()[number], 0, 0, null);
     }
 
     private static BufferedImage deepCopy(BufferedImage bi) {

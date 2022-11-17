@@ -34,7 +34,7 @@ public class ClockTestCanvas extends Canvas{
 
     public static void main(String[] args) {
         try {
-            File clockDir = new File("src/main/resources/clocks/analog");
+            File clockDir = new File("src/main/resources/clocks/digital");
             ClockTestCanvas m = new ClockTestCanvas(clockDir);
             JFrame f = new JFrame();
             f.add(m);

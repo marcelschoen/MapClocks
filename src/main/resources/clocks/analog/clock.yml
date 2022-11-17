@@ -43,7 +43,7 @@ radius: 58
 # Define the center point, where the hour and minute are rotating around.
 # The map size is 128x128 pixel, so the default is 64,64 (center).
 # These are the X and Y coordinates in pixels.
-center:
+offset:
   x: 64
   y: 64
 

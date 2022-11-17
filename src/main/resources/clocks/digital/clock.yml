@@ -1,5 +1,16 @@
-# Type is either 'analog' (with two digits) or 'digital' (00:00)
+# Type is either 'analog' (with two hands) or 'digital' (00:00)
 type: digital
+
+# Optional: If the 128x128 background image contains transparent areas,
+# you can define a background color to be filled in these areas. If no
+# background color is defined, the item frame and/or the block behind
+# the clock will be visible there.
+# Hint: Use a plugin that allows to make item frames invisible!
+background-color: 0,0,0
+
+# NOTE: Every clock MUST have the following PNG file in its directory:
+#
+# 'background.png' - 128x128 pixel clock face.
 
 # -----------------------------------------------------------------------------------
 # Digital clock info
@@ -24,14 +35,47 @@ type: digital
 # -----------------------------------------------------------------------------------
 # Analog clock info
 # -----------------------------------------------------------------------------------
-# An analog clock MUST have the following PNG files in its directory:
-# 'background.png' - 128x128 pixel clock face.
-# 'hour_hand.png'
-# 'minute_hand.png'
-# - The graphics will automatically be aligned by their baseline (lower end).
 
-# Optional: Set the coordinate of the point where the two
-# digits are centered, and are moving around. By default,
-# this is the center of the clock (64/64).
-#center: 64,64
+# Optional: Define radius (larger radius increases length of minute and hour hands).
+# Defaults to 60 pixels.
+#radius: 58
 
+# Define the center point, where the hour and minute are rotating around.
+# The map size is 128x128 pixel, so the default is 64,64 (center).
+# These are the X and Y coordinates in pixels.
+offset:
+  x: 12
+  y: 44
+
+# Width in pixels of hour (default: 8) and minute (default: 6) hands,
+# and width of the center knob (default: 12)
+#width:
+#  minute: 3
+#  hour: 5
+#  center: 14
+
+# Optional: Define colors (Minecraft 16 color hex scheme)
+# for the hour and minute hand, and the center bubble.
+# Will default to dark grey if not specified.
+#colors:
+#  minutes: "&8"
+#  hours: "&0"
+#  center: "&4"
+
+# Color codes:
+#
+# Dark Red     - &4
+# Red          - &c
+# Gold         - &6
+# Yellow       - &e
+# Dark Green   - &2
+# Green        - &a
+# Aqua         - &b
+# Dark Aqua    - &3
+# Blue         - &9
+# Light Purple - &d
+# Dark Purple  - &5
+# White        - &f
+# Gray         - &7
+# Dark Gray    - &8
+# Black        - &0
