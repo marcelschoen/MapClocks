@@ -34,6 +34,8 @@ public class Clock {
     private int centerWidth = 4;
     private int radius = 60;
 
+    private String[] lore = new String[] { };
+
     private Color backgroundColor = null;
 
     // digital clock digits and separator (colon)
@@ -48,6 +50,8 @@ public class Clock {
     private TYPES clockType = TYPES.analog;
 
     private String name;
+
+    private String displayName;
 
     private File directory;
 
@@ -82,6 +86,11 @@ public class Clock {
             }
         }
 
+        this.displayName = config.getString("displayName", this.name);
+        if(config.getStringList("lore") != null) {
+            this.lore = config.getStringList("lore").toArray(new String[0]);
+        }
+
         this.radius = config.getInt("radius", 60);
 
         String minuteHandColorCode = config.getString("colors.minutes");
@@ -98,6 +107,10 @@ public class Clock {
         this.minuteHandWidth = config.getInt("width.minute", 6);
         this.hourHandWidth = config.getInt("width.hour", 8);
         this.centerWidth = config.getInt("width.center", 12);
+    }
+
+    public String[] getLore() {
+        return lore;
     }
 
     public BufferedImage getUpdated(int hour, int offset) {
@@ -186,6 +199,10 @@ public class Clock {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public BufferedImage getBackground() {

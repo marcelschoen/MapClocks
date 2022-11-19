@@ -1,5 +1,11 @@
 # Type is either 'analog' (with two hands) or 'digital' (00:00)
 type: digital
+displayName: '&a&lNight Clock'
+lore:
+  - '&bThis old-school digital'
+  - '&bclock fits every bedroom.'
+  - '&bPut it on an &eItem Frame&b'
+  - '&bto get a wall clock.'
 
 # Optional: If the 128x128 background image contains transparent areas,
 # you can define a background color to be filled in these areas. If no

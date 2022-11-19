@@ -9,7 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
@@ -71,8 +73,6 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
     }
 
     private void readConfig() {
-
-        logInfo("********************************************* READ CONFIG *******************************************");
         try {
 
             File clocksDir = new File(getDataFolder(), "clocks");
@@ -118,13 +118,12 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             ClockManager.updateAllClockImages();
             ClockUpdateThread.launch();
 
-            logInfo("[MapClocks] Configuration loaded.");
+            logInfo("Configuration loaded.");
 
         } catch (Exception e) {
             MapClocks.logError("Failed to load configuration: " + e);
             throw new RuntimeException(e);
         }
-        logInfo("Loaded MapClocks configuration.");
     }
 
     private void extractResourceIfDoesNotExist(String resourcePath) {
@@ -220,7 +219,12 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                         manager.saveClock(view.getId(), clockName);
 
                         ItemStack map = new ItemStack(Material.FILLED_MAP);
+
                         MapMeta meta = (MapMeta) map.getItemMeta();
+                        meta.addEnchant(Enchantment.LURE, 1, false);
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        meta.setDisplayName(getColor("&r&fClock " + clock.getDisplayName()));
+                        meta.setLore(Arrays.stream(clock.getLore()).map(l -> getColor(l)).collect(Collectors.toList()));
                         meta.setMapView(view);
                         map.setItemMeta(meta);
                         //Give items and drop if inventory is full
@@ -234,6 +238,10 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             return true;
         }
         return false;
+    }
+
+    private static String getColor(String s){
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 
     private void showHelp(final CommandSender sender) {
