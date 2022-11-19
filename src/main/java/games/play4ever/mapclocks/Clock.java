@@ -106,7 +106,7 @@ public class Clock {
     public void updateImages() {
         for(int hour = 0; hour < 12; hour ++) {
             MapClocks.logInfo("-> update clock image no. " + hour);
-            this.updated[hour] = this.clockRenderer.renderClock(hour);
+            this.updated[hour] = this.clockRenderer.renderClock(hour + 1);
         }
     }
 
