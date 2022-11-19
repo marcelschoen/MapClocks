@@ -1,6 +1,11 @@
 # Type is either 'analog' (with two hands) or 'digital' (00:00)
 type: digital
-displayName: '&a&lNight Clock'
+
+# Optional item name.
+displayName: '&d&lClassic Digital'
+
+# Optional item lore. You can use the usual
+# color formatting codes.
 lore:
   - '&bThis old-school digital'
   - '&bclock fits every bedroom.'
@@ -12,61 +17,15 @@ lore:
 # background color is defined, the item frame and/or the block behind
 # the clock will be visible there.
 # Hint: Use a plugin that allows to make item frames invisible!
-background-color: 0,0,0
+#background-color: 0,0,0
 
-# NOTE: Every clock MUST have the following PNG file in its directory:
-#
-# 'background.png' - 128x128 pixel clock face.
-
-# -----------------------------------------------------------------------------------
-# Digital clock info
-# -----------------------------------------------------------------------------------
-# A digital clock MUST have the following PNG files in its directory:
-# 'background.png' - 128x128 pixel clock face.
-# '0.png'
-# '1.png'
-# '2.png'
-# '3.png'
-# '4.png'
-# '5.png'
-# '6.png'
-# '7.png'
-# '8.png'
-# '9.png'
-# 'separator.png' - Character which separates hours and minutes, e.g. color (":")
-# - The graphics will automatically be aligned by their baseline (lower end).
-# - The width of each number is determined automatically.
-# Make sure that the numbers will always properly fit on the clock.
-
-# -----------------------------------------------------------------------------------
-# Analog clock info
-# -----------------------------------------------------------------------------------
-
-# Optional: Define radius (larger radius increases length of minute and hour hands).
-# Defaults to 60 pixels.
-#radius: 58
-
-# Define the center point, where the hour and minute are rotating around.
-# The map size is 128x128 pixel, so the default is 64,64 (center).
-# These are the X and Y coordinates in pixels.
+# For an analog clocks, this setting defines the
+# center point where the hour and minute are rotating around.
+# For a digital clock, it is where the clock starts
+# rendering the digits (left-most upper corner of 1st digit)
 offset:
   x: 12
   y: 44
-
-# Width in pixels of hour (default: 8) and minute (default: 6) hands,
-# and width of the center knob (default: 12)
-#width:
-#  minute: 3
-#  hour: 5
-#  center: 14
-
-# Optional: Define colors (Minecraft 16 color hex scheme)
-# for the hour and minute hand, and the center bubble.
-# Will default to dark grey if not specified.
-#colors:
-#  minutes: "&8"
-#  hours: "&0"
-#  center: "&4"
 
 # Color codes:
 #
