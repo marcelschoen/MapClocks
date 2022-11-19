@@ -20,9 +20,9 @@ public class ClockUpdateThread implements Runnable {
     public void run() {
         while(running) {
             try {
-                MapClocks.logInfo("*** Update clocks ***");
-                ClockManager.updateAllClockImages();
                 ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+                MapClocks.logInfo("*** Update clocks / current server time: " + now.getHour() + ":" + now.getMinute() + " ***");
+                ClockManager.updateAllClockImages();
                 Thread.sleep(1000 * (60 - now.getSecond()));
             } catch(Exception e) {
                 running = false;

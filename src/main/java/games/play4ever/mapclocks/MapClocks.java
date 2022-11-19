@@ -43,7 +43,9 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         includedClocks.put("analog", Clock.TYPES.analog);
         includedClocks.put("digital", Clock.TYPES.analog);
         includedClocks.put("analog_square_blue", Clock.TYPES.analog);
+        includedClocks.put("analog_square_wooden", Clock.TYPES.analog);
         includedClocks.put("digital_lcd", Clock.TYPES.analog);
+        includedClocks.put("digital_bookshelf", Clock.TYPES.analog);
 
         // Prefix as defined in "plugin.yml"
         Objects.requireNonNull(getCommand("mapclocks")).setExecutor(this);
@@ -83,8 +85,11 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             for(String clockName : includedClocks.keySet()) {
                 File clockDir = new File(clocksDir, clockName);
                 clockDir.mkdirs();
-                saveResource("clocks/" + clockName + "/clock.yml", false);
+                extractResourceIfDoesNotExist("clocks/" + clockName + "/clock.yml");
+            }
 
+            for(String clockName: clocksDir.list()) {
+                File clockDir = new File(clocksDir, clockName);
                 Clock clock = ClockManager.getClockByName(clockName);
                 if(clock == null) {
                     logInfo("Adding clock '" + clockName + "' to clock manager...");
@@ -97,12 +102,12 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
                     MapClocks.logError("Failed to load clock from directory: " + clockDir.getName() + " / " + ex);
                 }
 
-                saveResource("clocks/" + clockName + "/background.png", false);
+                extractResourceIfDoesNotExist("clocks/" + clockName + "/background.png");
                 if(clock.getType() == Clock.TYPES.digital) {
                     for(int i = 0; i < 10; i++) {
-                        saveResource("clocks/" + clockName + "/" + i + ".png", false);
+                        extractResourceIfDoesNotExist("clocks/" + clockName + "/" + i + ".png");
                     }
-                    saveResource("clocks/" + clockName + "/separator.png", false);
+                    extractResourceIfDoesNotExist("clocks/" + clockName + "/separator.png");
                 }
             }
 
@@ -120,6 +125,13 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             throw new RuntimeException(e);
         }
         logInfo("Loaded MapClocks configuration.");
+    }
+
+    private void extractResourceIfDoesNotExist(String resourcePath) {
+        File targetFile = new File(getDataFolder(), resourcePath);
+        if(!targetFile.exists()) {
+            saveResource(resourcePath, false);
+        }
     }
 
     private static boolean isConsoleOrOP(CommandSender sender) {
