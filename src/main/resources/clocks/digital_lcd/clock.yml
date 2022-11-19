@@ -6,7 +6,7 @@ type: digital
 # background color is defined, the item frame and/or the block behind
 # the clock will be visible there.
 # Hint: Use a plugin that allows to make item frames invisible!
-background-color: 0,0,0
+#background-color: 0,0,0
 
 # NOTE: Every clock MUST have the following PNG file in its directory:
 #
@@ -44,8 +44,8 @@ background-color: 0,0,0
 # The map size is 128x128 pixel, so the default is 64,64 (center).
 # These are the X and Y coordinates in pixels.
 offset:
-  x: 25
-  y: 34
+  x: 22
+  y: 29
 
 # Width in pixels of hour (default: 8) and minute (default: 6) hands,
 # and width of the center knob (default: 12)

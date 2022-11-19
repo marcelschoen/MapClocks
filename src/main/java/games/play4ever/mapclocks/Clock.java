@@ -86,7 +86,7 @@ public class Clock {
             }
         }
 
-        this.displayName = config.getString("displayName", this.name);
+        this.displayName = config.getString("displayName", "&d&l" + this.name);
         if(config.getStringList("lore") != null) {
             this.lore = config.getStringList("lore").toArray(new String[0]);
         }
