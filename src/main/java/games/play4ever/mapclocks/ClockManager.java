@@ -31,11 +31,8 @@ public class ClockManager implements Listener {
         return instance;
     }
 
-    public static void clearClocks() {
-        clocks.clear();
-    }
-
     public static void addClock(Clock clock) {
+        MapClocks.logInfo(">>>> add clock: " + clock.getName());
         clocks.put(clock.getName(), clock);
     }
 
@@ -59,7 +56,7 @@ public class ClockManager implements Listener {
     }
 
     public static void updateAllClockImages() {
-        MapClocks.logInfo("Updating " + clocks.size() + " clock images...");
+        MapClocks.logInfo("Updating " + clocks.size() + " clocks...");
         clocks.values().stream().forEach(clock -> clock.updateImages() );
     }
 
@@ -81,7 +78,7 @@ public class ClockManager implements Listener {
             Clock clock = getClockByName(clockName);
             MapView view = event.getMap();
             view.getRenderers().clear();
-            view.addRenderer(new ClockRenderer(clock));
+            view.addRenderer(clock.getClockRenderer());
             view.setScale(MapView.Scale.FARTHEST);
             view.setTrackingPosition(false);
         }

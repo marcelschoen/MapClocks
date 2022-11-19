@@ -28,8 +28,6 @@ public class ClockRenderer extends MapRenderer {
         this.clock = clock;
     }
 
-
-
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
         String playerKey = "players." + player.getName() + ".offset";
@@ -37,7 +35,7 @@ public class ClockRenderer extends MapRenderer {
         view.setTrackingPosition(false);
         ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         int currentHour = now.getHour() > 12 ? now.getHour() - 12 : now.getHour();
-        canvas.drawImage(0,0, clock.getUpdated(currentHour, offset)); // TODO - OFFSET
+        canvas.drawImage(0,0, clock.getUpdated(currentHour, offset));
     }
 
     public BufferedImage renderClock(int hour) {
@@ -87,7 +85,6 @@ public class ClockRenderer extends MapRenderer {
 
         } else {
 
-            System.out.println("---> HOUR: " + hour);
             int hourNumber = hour > 9 ? 1 : 0;
             drawDigit(clock, g, hourNumber);
 

@@ -51,13 +51,21 @@ public class Clock {
 
     private File directory;
 
-    public Clock(File directory) throws IOException, InvalidConfigurationException {
+    public Clock(String name) {
+        this.name = name;
+        this.clockRenderer = new ClockRenderer(this);
+    }
+
+    public ClockRenderer getClockRenderer() {
+        return this.clockRenderer;
+    }
+
+    public void configure(File directory) throws IOException, InvalidConfigurationException {
         this.directory = directory;
         this.name = directory.getName();
         YamlConfiguration config = new YamlConfiguration();
         config.load(new File(directory,"clock.yml"));
         this.clockType = TYPES.valueOf(config.getString("type"));
-        this.clockRenderer = new ClockRenderer(this);
 
         String backgroundColorTxt = config.getString("background-color");
         if(backgroundColorTxt != null) {
@@ -90,7 +98,6 @@ public class Clock {
         this.minuteHandWidth = config.getInt("width.minute", 6);
         this.hourHandWidth = config.getInt("width.hour", 8);
         this.centerWidth = config.getInt("width.center", 12);
-
     }
 
     public BufferedImage getUpdated(int hour, int offset) {
@@ -105,7 +112,6 @@ public class Clock {
 
     public void updateImages() {
         for(int hour = 0; hour < 12; hour ++) {
-            MapClocks.logInfo("-> update clock image no. " + hour);
             this.updated[hour] = this.clockRenderer.renderClock(hour + 1);
         }
     }

@@ -41,6 +41,9 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
         userDataStorage = FileStorage.getInstance();
 
         includedClocks.put("analog", Clock.TYPES.analog);
+        includedClocks.put("digital", Clock.TYPES.analog);
+        includedClocks.put("analog_square_blue", Clock.TYPES.analog);
+        includedClocks.put("digital_lcd", Clock.TYPES.analog);
 
         // Prefix as defined in "plugin.yml"
         Objects.requireNonNull(getCommand("mapclocks")).setExecutor(this);
@@ -48,9 +51,9 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
         // Plugin startup logic
 
-        readConfig();
         ClockManager clockManager = ClockManager.getInstance();
         clockManager.init();
+        readConfig();
     }
 
     public static void logInfo(String message) {
@@ -67,8 +70,8 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
 
     private void readConfig() {
 
+        logInfo("********************************************* READ CONFIG *******************************************");
         try {
-            ClockManager.clearClocks();
 
             File clocksDir = new File(getDataFolder(), "clocks");
             clocksDir.mkdirs();
@@ -76,32 +79,39 @@ public final class MapClocks extends JavaPlugin implements CommandExecutor, TabC
             if(!configFile.exists()) {
                 saveDefaultConfig();
             }
+
             for(String clockName : includedClocks.keySet()) {
                 File clockDir = new File(clocksDir, clockName);
                 clockDir.mkdirs();
                 saveResource("clocks/" + clockName + "/clock.yml", false);
-                //Clock clock = new Clock(clockDir);
+
+                Clock clock = ClockManager.getClockByName(clockName);
+                if(clock == null) {
+                    logInfo("Adding clock '" + clockName + "' to clock manager...");
+                    clock = new Clock(clockName);
+                    ClockManager.addClock(clock);
+                }
+                try {
+                    clock.configure(clockDir);
+                } catch(InvalidConfigurationException ex) {
+                    MapClocks.logError("Failed to load clock from directory: " + clockDir.getName() + " / " + ex);
+                }
+
                 saveResource("clocks/" + clockName + "/background.png", false);
+                if(clock.getType() == Clock.TYPES.digital) {
+                    for(int i = 0; i < 10; i++) {
+                        saveResource("clocks/" + clockName + "/" + i + ".png", false);
+                    }
+                    saveResource("clocks/" + clockName + "/separator.png", false);
+                }
             }
 
             YamlConfiguration config = new YamlConfiguration();
             config.load(configFile);
 
-            File clocksDirectory = new File(getDataFolder(), "clocks");
-            for(String subDirName : clocksDirectory.list()) {
-                File subDir = new File(clocksDirectory, subDirName);
-                if(subDir.isDirectory()) {
-                    try {
-                        ClockManager.addClock(new Clock(subDir));
-                    } catch(InvalidConfigurationException ex) {
-                        MapClocks.logError("Failed to load clock from directory: " + subDir.getName() + " / " + ex);
-                    }
-                }
-            }
-
             ClockManager.initializeAllClocks();
-
             ClockManager.updateAllClockImages();
+            ClockUpdateThread.launch();
 
             logInfo("[MapClocks] Configuration loaded.");
 

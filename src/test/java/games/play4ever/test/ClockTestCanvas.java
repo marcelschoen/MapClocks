@@ -35,9 +35,11 @@ public class ClockTestCanvas extends Canvas{
         try {
             File clockDir = new File("src/main/resources/clocks");
             List<String> clocks = Arrays.asList(clockDir.list()).stream().collect(Collectors.toList());
-            clocks.forEach(clock -> {
+            clocks.forEach(clockName -> {
                 try {
-                    ClockManager.addClock(new Clock(new File(clockDir, clock)));
+                    Clock clock = new Clock(clockName);
+                    clock.configure(new File(clockDir, clockName));
+                    ClockManager.addClock(clock);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

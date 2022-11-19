@@ -1,23 +1,29 @@
 package games.play4ever.mapclocks;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 public class ClockUpdateThread implements Runnable {
 
-    private static boolean running = true;
+    private static boolean running = false;
 
     public static void launch() {
-        Thread mapClocksUpdaterThread = new Thread(new ClockUpdateThread());
-        mapClocksUpdaterThread.setName("MapClocks Updater");
-        mapClocksUpdaterThread.start();
+        if(!running) {
+            Thread mapClocksUpdaterThread = new Thread(new ClockUpdateThread());
+            mapClocksUpdaterThread.setName("MapClocks Updater");
+            mapClocksUpdaterThread.start();
+            running = true;
+        }
     }
 
     @Override
     public void run() {
         while(running) {
             try {
+                MapClocks.logInfo("*** Update clocks ***");
                 ClockManager.updateAllClockImages();
-                for (int i = 0; i < 60 && running; i++) {
-                    Thread.sleep(1000);
-                }
+                ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+                Thread.sleep(1000 * (60 - now.getSecond()));
             } catch(Exception e) {
                 running = false;
             }
